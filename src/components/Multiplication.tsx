@@ -11,23 +11,29 @@ const generateFactorsListForLevel = (level: number) => {
   return factors as [number, number][];
 };
 
-const getRandomIndex = (factors: [number, number][]) => Math.floor(Math.random() * factors.length);
-
+const getRandomIndex = (factors: [number, number][]) =>
+  Math.floor(Math.random() * factors.length);
 
 const removePair = (factors: [number, number][], idx: number) => {
-  const newFactors = [...factors]; newFactors.splice(idx, 1); return newFactors;
-}
+  const newFactors = [...factors];
+  newFactors.splice(idx, 1);
+  return newFactors;
+};
 export const Multiplication = () => {
-  const [factors, setFactors] = useState<[number, number][]>(generateFactorsListForLevel(1));
-  const idx = getRandomIndex(factors)
-  const onClick = () => setFactors(factors => removePair(factors, idx))
+  const [factors, setFactors] = useState<[number, number][]>(
+    generateFactorsListForLevel(1)
+  );
+  const idx = getRandomIndex(factors);
+  const onClick = () => setFactors((factors) => removePair(factors, idx));
   return (
     <div>
       <span>5 x 5</span>
       <input type="number" />
       <div>{JSON.stringify(factors)}</div>
-      <div> x   {JSON.stringify(factors[idx])}</div>
-      <div><button onClick={onClick}>Remove</button></div>
+      <div> x      {JSON.stringify(factors[idx])}</div>
+      <div>
+        <button onClick={onClick}>Remove</button>
+      </div>
     </div>
   );
 };

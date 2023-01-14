@@ -21,6 +21,12 @@ const removePair = (factors: [number, number][], idx: number) => {
   return newFactors;
 };
 
+const shouldRegenerateList = () => true;
+const shouldRemovePair = () => true;
+const shouldIncrementQuestion = () => true;
+const shouldIncrementLevel = () => true;
+const shouldIncrementWorld = () => true;
+
 export const Multiplication = () => {
   const [question, setQuestion] = useState(data.question.get() || 1);
   const [answer, setAnswer] = useState("");

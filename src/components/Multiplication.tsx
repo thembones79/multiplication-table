@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { data } from "../data"
+import { data } from "../data";
 
 const generateFactorsListForLevel = (level: number) => {
   let factors = [];
@@ -21,26 +21,36 @@ const removePair = (factors: [number, number][], idx: number) => {
   return newFactors;
 };
 
-const incrementQuestion = (question: number) => question + 1;
-
-const resetQuestion = 1;
-
 export const Multiplication = () => {
   const [factors, setFactors] = useState<[number, number][]>(
     generateFactorsListForLevel(1)
   );
-  const [question, setQuestion] = useState(1);
+  const [question, setQuestion] = useState(data.question.get() || 1);
   const idx = getRandomIndex(factors);
   const onClick = () => setFactors((factors) => removePair(factors, idx));
+  const onIncrement = () => {
+    data.question.set(question + 1);
+    setQuestion((question) => question + 1);
+  };
+  const onReset = () => {
+    data.question.set(1);
+    setQuestion(1);
+  };
   return (
     <div>
-      <div><span>Question {question}</span></div>
+      <div>
+        <span>Question {question}</span>
+      </div>
       <span>5 x 5</span>
       <input type="number" />
       <div>{JSON.stringify(factors)}</div>
       <div> x {JSON.stringify(factors[idx])}</div>
       <div>
         <button onClick={onClick}>Remove</button>
+      </div>
+      <div>
+        <button onClick={onIncrement}>Increment</button>
+        <button onClick={onReset}>Reset</button>
       </div>
     </div>
   );

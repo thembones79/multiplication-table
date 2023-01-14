@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, FormEvent, ChangeEvent } from "react";
 import { data } from "../data";
 
 const generateFactorsListForLevel = (level: number) => {
@@ -22,10 +22,13 @@ const removePair = (factors: [number, number][], idx: number) => {
 };
 
 export const Multiplication = () => {
-  const [factors, setFactors] = useState<[number, number][]>(
-    generateFactorsListForLevel(1)
-  );
   const [question, setQuestion] = useState(data.question.get() || 1);
+  const [answer, setAnswer] = useState("");
+  const [level, setLevel] = useState(data.level.get() || 1);
+  const [world, setWorld] = useState(data.world.get() || 1);
+  const [factors, setFactors] = useState<[number, number][]>(
+    generateFactorsListForLevel(level || 1)
+  );
   const idx = getRandomIndex(factors);
   const onClick = () => setFactors((factors) => removePair(factors, idx));
   const onIncrement = () => {
@@ -36,13 +39,24 @@ export const Multiplication = () => {
     data.question.set(1);
     setQuestion(1);
   };
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setAnswer(value);
+  };
+  const onSubmit = (e: FormEvent) => {
+    e.preventDefault();
+  };
   return (
     <div>
       <div>
         <span>Question {question}</span>
+        <span>Level {level}</span>
+        <span>World {world}</span>
       </div>
-      <span>5 x 5</span>
-      <input type="number" />
+      <form onSubmit={onSubmit}>
+        <span>5 x 5</span>
+        <input type="number" value={answer} onChange={onChange} />
+      </form>
       <div>{JSON.stringify(factors)}</div>
       <div> x {JSON.stringify(factors[idx])}</div>
       <div>

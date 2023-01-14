@@ -1,6 +1,7 @@
 import { useState, FormEvent, ChangeEvent } from "react";
 import { data } from "../data";
 
+type Pair = [number, number];
 const generateFactorsListForLevel = (level: number) => {
   let factors = [];
   for (let i = 2; i < 11; i++) {
@@ -9,13 +10,13 @@ const generateFactorsListForLevel = (level: number) => {
       factors.push([i, j]);
     }
   }
-  return factors as [number, number][];
+  return factors as Pair[];
 };
 
-const getRandomIndex = (factors: [number, number][]) =>
+const getRandomIndex = (factors: Pair[]) =>
   Math.floor(Math.random() * factors.length);
 
-const removePair = (factors: [number, number][], idx: number) => {
+const removePair = (factors: Pair[], idx: number) => {
   const newFactors = [...factors];
   newFactors.splice(idx, 1);
   return newFactors;
@@ -27,19 +28,34 @@ const shouldIncrementQuestion = () => true;
 const shouldIncrementLevel = () => true;
 const shouldIncrementWorld = () => true;
 
+const result = (pair: Pair) => pair[0] * pair[1];
+const isCorrect = (answer: number, result: number) => answer === result;
+
 export const Multiplication = () => {
   const [question, setQuestion] = useState(data.question.get() || 1);
   const [answer, setAnswer] = useState("");
   const [level, setLevel] = useState(data.level.get() || 1);
   const [world, setWorld] = useState(data.world.get() || 1);
-  const [factors, setFactors] = useState<[number, number][]>(
+  const [errors, setErrors] = useState(data.errors.get() || 0);
+  const [factors, setFactors] = useState<Pair[]>(
     generateFactorsListForLevel(level || 1)
   );
-  const idx = getRandomIndex(factors);
-  const onClick = () => setFactors((factors) => removePair(factors, idx));
-  const onIncrement = () => {
+  const [idx, setIdx] = useState(getRandomIndex(factors));
+  const pair = factors[idx];
+  const removeQuestion = () =>
+    setFactors((factors) => removePair(factors, idx));
+  const pickNewQuestion = () => setIdx(getRandomIndex(factors));
+  const incrementQuestionNumber = () => {
     data.question.set(question + 1);
     setQuestion((question) => question + 1);
+  };
+  const incrementErrors = () => {
+    data.errors.set(errors + 1);
+    setErrors((errors) => errors + 1);
+  };
+  const resetErrors = () => {
+    data.errors.set(0);
+    setErrors(0);
   };
   const onReset = () => {
     data.question.set(1);
@@ -51,6 +67,17 @@ export const Multiplication = () => {
   };
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
+    moveForward();
+  };
+  const moveForward = () => {
+    if (isCorrect(Number(answer), result(pair))) {
+      incrementQuestionNumber();
+      removeQuestion();
+      pickNewQuestion();
+    } else {
+      incrementErrors();
+    }
+    setAnswer("");
   };
   return (
     <div>
@@ -66,10 +93,10 @@ export const Multiplication = () => {
       <div>{JSON.stringify(factors)}</div>
       <div> x {JSON.stringify(factors[idx])}</div>
       <div>
-        <button onClick={onClick}>Remove</button>
+        <button onClick={removeQuestion}>Remove</button>
       </div>
       <div>
-        <button onClick={onIncrement}>Increment</button>
+        <button onClick={incrementQuestionNumber}>Increment</button>
         <button onClick={onReset}>Reset</button>
       </div>
     </div>

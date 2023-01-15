@@ -1,6 +1,13 @@
 import { useState, FormEvent, ChangeEvent } from "react";
 import { data } from "../data";
 
+interface IMoveForward {
+  factors: Pair[];
+  idx: number;
+  answer: string;
+  pair: Pair;
+}
+
 type Pair = [number, number];
 const generateFactorsListForLevel = (level: number) => {
   let factors = [];
@@ -38,13 +45,22 @@ export const Multiplication = () => {
   const [world, setWorld] = useState(data.world.get() || 1);
   const [errors, setErrors] = useState(data.errors.get() || 0);
   const [factors, setFactors] = useState<Pair[]>(
-    generateFactorsListForLevel(level || 1)
+    data.factors.get() || generateFactorsListForLevel(level || 1)
   );
-  const [idx, setIdx] = useState(getRandomIndex(factors));
+  const [idx, setIdx] = useState(data.idx.get() || getRandomIndex(factors));
   const pair = factors[idx];
-  const removeQuestion = () =>
-    setFactors((factors) => removePair(factors, idx));
-  const pickNewQuestion = () => setIdx(getRandomIndex(factors));
+  console.log({ idx, pair: JSON.stringify(pair), f: factors.length });
+  const removeQuestion = (factors: Pair[], idx: number) => {
+    const newFactors = removePair(factors, idx);
+    data.factors.set(newFactors);
+    setFactors(newFactors);
+  };
+  const pickNewQuestion = (factors: Pair[]) => {
+    const newIdx = getRandomIndex(factors);
+    console.log({ newIdx });
+    data.idx.set(newIdx);
+    setIdx(newIdx);
+  };
   const incrementQuestionNumber = () => {
     data.question.set(question + 1);
     setQuestion((question) => question + 1);
@@ -67,13 +83,14 @@ export const Multiplication = () => {
   };
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    moveForward();
+    moveForward({ factors, idx, answer, pair });
   };
-  const moveForward = () => {
+  console.log(factors);
+  const moveForward = ({ factors, idx, answer, pair }: IMoveForward) => {
     if (isCorrect(Number(answer), result(pair))) {
       incrementQuestionNumber();
-      removeQuestion();
-      pickNewQuestion();
+      removeQuestion(factors, idx);
+      pickNewQuestion(factors);
     } else {
       incrementErrors();
     }
@@ -97,7 +114,7 @@ export const Multiplication = () => {
       </div>
       <div>
         <button onClick={incrementQuestionNumber}>Increment</button>
-        <button onClick={onReset}>Reset</button>
+        <button onClick={() => localStorage.clear()}>Reset</button>
       </div>
     </div>
   );

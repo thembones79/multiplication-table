@@ -9,4 +9,5 @@ export const data = {
   world: create<number>("WORLD"),
   allQuestionsCount: create<number>("ALL_QUESTIONS_COUNT"),
   errors: create<number>("ERRORS"),
+  idx: create<number>("IDX"),
 };

@@ -1,4 +1,4 @@
-import { useState, FormEvent, ChangeEvent } from "react";
+import { useEffect, useState, FormEvent, ChangeEvent } from "react";
 import { data } from "../data";
 
 interface IMoveForward {
@@ -9,12 +9,11 @@ interface IMoveForward {
 }
 
 type Pair = [number, number];
-const generateFactorsListForLevel = (level: number) => {
-  console.log("gen");
+const generateFactorsListForWorld = (world: number) => {
   let factors = [];
   for (let i = 2; i < 11; i++) {
     for (let j = 2; j < 11; j++) {
-      if (i * j > level * 10) break;
+      if (i * j > world * 10) break;
       factors.push([i, j]);
     }
   }
@@ -25,16 +24,15 @@ const getRandomIndex = (factors: Pair[]) =>
   Math.floor(Math.random() * factors.length);
 
 const removePair = (factors: Pair[], idx: number) => {
-  console.log("remov");
   const newFactors = [...factors];
   newFactors.splice(idx, 1);
   return newFactors;
 };
 
-const shouldRegenerateList = () => true;
+const shouldRegenerateList = (factors: Pair[]) => factors.length === 0;
 const shouldRemovePair = () => true;
-const shouldIncrementQuestion = () => true;
-const shouldIncrementLevel = () => true;
+const shouldIncrementLevel = (question: number, errors: number) =>
+  question > 10 && errors === 0;
 const shouldIncrementWorld = () => true;
 
 const result = (pair: Pair) => pair[0] * pair[1];
@@ -47,26 +45,31 @@ export const Multiplication = () => {
   const [world, setWorld] = useState(data.world.get() || 1);
   const [errors, setErrors] = useState(data.errors.get() || 0);
   const [factors, setFactors] = useState<Pair[]>(
-    data.factors.get() || generateFactorsListForLevel(level || 1)
+    data.factors.get() || generateFactorsListForWorld(level || 1)
   );
   const [idx, setIdx] = useState(data.idx.get() || getRandomIndex(factors));
   const pair = factors[idx];
-  console.log({ idx, pair: JSON.stringify(pair), f: factors.length });
+  useEffect(() => {
+    if (shouldRegenerateList(factors)) {
+      const newFactors = generateFactorsListForWorld(world);
+      data.factors.set(newFactors);
+      setFactors(newFactors);
+    }
+  }, [factors]);
+  useEffect(() => {
+    if (shouldIncrementLevel(question, errors)) {
+      data.level.set(level + 1);
+      setLevel((level) => level + 1);
+    }
+  }, [question]);
   const removeQuestion = (factors: Pair[], idx: number) => {
-    console.log({ len: factors.length });
-    console.log(factors.length === 0);
-    const newFactors =
-      factors.length > 1
-        ? removePair(factors, idx)
-        : generateFactorsListForLevel(level);
-    console.log({ newFactors });
+    const newFactors = removePair(factors, idx);
     data.factors.set(newFactors);
     setFactors(newFactors);
     pickNewQuestion(newFactors);
   };
   const pickNewQuestion = (factors: Pair[]) => {
     const newIdx = getRandomIndex(factors);
-    console.log({ newIdx });
     data.idx.set(newIdx);
     setIdx(newIdx);
   };
@@ -94,7 +97,6 @@ export const Multiplication = () => {
     e.preventDefault();
     moveForward({ factors, idx, answer, pair });
   };
-  console.log(factors);
   const moveForward = ({ factors, idx, answer, pair }: IMoveForward) => {
     if (isCorrect(Number(answer), result(pair))) {
       incrementQuestionNumber();

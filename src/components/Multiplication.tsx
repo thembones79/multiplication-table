@@ -10,6 +10,7 @@ interface IMoveForward {
 
 type Pair = [number, number];
 const generateFactorsListForLevel = (level: number) => {
+  console.log("gen");
   let factors = [];
   for (let i = 2; i < 11; i++) {
     for (let j = 2; j < 11; j++) {
@@ -24,6 +25,7 @@ const getRandomIndex = (factors: Pair[]) =>
   Math.floor(Math.random() * factors.length);
 
 const removePair = (factors: Pair[], idx: number) => {
+  console.log("remov");
   const newFactors = [...factors];
   newFactors.splice(idx, 1);
   return newFactors;
@@ -51,9 +53,16 @@ export const Multiplication = () => {
   const pair = factors[idx];
   console.log({ idx, pair: JSON.stringify(pair), f: factors.length });
   const removeQuestion = (factors: Pair[], idx: number) => {
-    const newFactors = removePair(factors, idx);
+    console.log({ len: factors.length });
+    console.log(factors.length === 0);
+    const newFactors =
+      factors.length > 1
+        ? removePair(factors, idx)
+        : generateFactorsListForLevel(level);
+    console.log({ newFactors });
     data.factors.set(newFactors);
     setFactors(newFactors);
+    pickNewQuestion(newFactors);
   };
   const pickNewQuestion = (factors: Pair[]) => {
     const newIdx = getRandomIndex(factors);
@@ -90,7 +99,6 @@ export const Multiplication = () => {
     if (isCorrect(Number(answer), result(pair))) {
       incrementQuestionNumber();
       removeQuestion(factors, idx);
-      pickNewQuestion(factors);
     } else {
       incrementErrors();
     }

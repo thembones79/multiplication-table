@@ -1,13 +1,6 @@
 import { useEffect, useState, FormEvent, ChangeEvent } from "react";
 import { data } from "../data";
 
-interface IMoveForward {
-  factors: Pair[];
-  idx: number;
-  answer: string;
-  pair: Pair;
-}
-
 type Pair = [number, number];
 const generateFactorsListForWorld = (world: number) => {
   let factors = [];
@@ -29,15 +22,6 @@ const removePair = (factors: Pair[], idx: number) => {
   return newFactors;
 };
 
-const shouldRegenerateList = (factors: Pair[]) => factors.length === 0;
-const shouldRemovePair = () => true;
-const shouldIncrementLevel = (question: number, errors: number) =>
-  question > 10 && errors === 0;
-const shouldIncrementWorld = () => true;
-
-const result = (pair: Pair) => pair[0] * pair[1];
-const isCorrect = (answer: number, result: number) => answer === result;
-
 export const Multiplication = () => {
   const [question, setQuestion] = useState(data.question.get() || 1);
   const [answer, setAnswer] = useState("");
@@ -49,20 +33,30 @@ export const Multiplication = () => {
   );
   const [idx, setIdx] = useState(data.idx.get() || getRandomIndex(factors));
   const pair = factors[idx];
+  const [a, b] = pair;
+  const result = pair ? a * b : 0;
+  const shouldRegenerateList = factors.length === 1;
+  const shouldRemovePair = () => true;
+  const shouldIncrementLevel = question > 10 && errors === 0;
+  const shouldResetQuestion = question > 10;
+  const shouldIncrementWorld = level > 10;
+  const shouldStopGame = world > 10;
+  const isCorrect = Number(answer) === result;
   useEffect(() => {
-    if (shouldRegenerateList(factors)) {
-      const newFactors = generateFactorsListForWorld(world);
-      data.factors.set(newFactors);
-      setFactors(newFactors);
-    }
+    shouldRegenerateList && regenerateList();
   }, [factors]);
   useEffect(() => {
-    if (shouldIncrementLevel(question, errors)) {
-      data.level.set(level + 1);
-      setLevel((level) => level + 1);
-    }
+    shouldIncrementLevel && incrementLevel();
   }, [question]);
-  const removeQuestion = (factors: Pair[], idx: number) => {
+  useEffect(() => {
+    shouldResetQuestion && resetQuestion();
+  }, [level]);
+  const regenerateList = () => {
+    const newFactors = generateFactorsListForWorld(world);
+    data.factors.set(newFactors);
+    setFactors(newFactors);
+  };
+  const removeQuestion = () => {
     const newFactors = removePair(factors, idx);
     data.factors.set(newFactors);
     setFactors(newFactors);
@@ -81,11 +75,15 @@ export const Multiplication = () => {
     data.errors.set(errors + 1);
     setErrors((errors) => errors + 1);
   };
+  const incrementLevel = () => {
+    data.level.set(level + 1);
+    setLevel((level) => level + 1);
+  };
   const resetErrors = () => {
     data.errors.set(0);
     setErrors(0);
   };
-  const onReset = () => {
+  const resetQuestion = () => {
     data.question.set(1);
     setQuestion(1);
   };
@@ -95,12 +93,12 @@ export const Multiplication = () => {
   };
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    moveForward({ factors, idx, answer, pair });
+    moveForward();
   };
-  const moveForward = ({ factors, idx, answer, pair }: IMoveForward) => {
-    if (isCorrect(Number(answer), result(pair))) {
+  const moveForward = () => {
+    if (isCorrect) {
       incrementQuestionNumber();
-      removeQuestion(factors, idx);
+      removeQuestion();
     } else {
       incrementErrors();
     }
@@ -114,16 +112,11 @@ export const Multiplication = () => {
         <span>World {world}</span>
       </div>
       <form onSubmit={onSubmit}>
-        <span>5 x 5</span>
+        <span>{pair ? `${a} x ${b} = ` : ""}</span>
         <input type="number" value={answer} onChange={onChange} />
       </form>
       <div>{JSON.stringify(factors)}</div>
-      <div> x {JSON.stringify(factors[idx])}</div>
       <div>
-        <button onClick={removeQuestion}>Remove</button>
-      </div>
-      <div>
-        <button onClick={incrementQuestionNumber}>Increment</button>
         <button onClick={() => localStorage.clear()}>Reset</button>
       </div>
     </div>

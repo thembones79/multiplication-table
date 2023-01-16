@@ -36,7 +36,6 @@ export const Multiplication = () => {
   const [a, b] = pair;
   const result = pair ? a * b : 0;
   const shouldRegenerateList = factors.length === 1;
-  const shouldRemovePair = () => true;
   const shouldIncrementLevel = question > 10 && errors === 0;
   const shouldResetQuestion = question > 10;
   const shouldIncrementWorld = level > 10;

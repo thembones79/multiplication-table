@@ -23,6 +23,7 @@ const removePair = (factors: Pair[], idx: number) => {
 };
 
 export const Multiplication = () => {
+  const [userName, setUserName] = useState(data.userName.get() || "");
   const [question, setQuestion] = useState(data.question.get() || 1);
   const [answer, setAnswer] = useState("");
   const [level, setLevel] = useState(data.level.get() || 1);
@@ -39,61 +40,92 @@ export const Multiplication = () => {
   const shouldIncrementLevel = question > 10 && errors === 0;
   const shouldResetQuestion = question > 10;
   const shouldIncrementWorld = level > 10;
-  const shouldStopGame = world > 10;
+  const shouldShowThankYou = world > 10;
+  const shouldShowWelcome = !userName;
   const isCorrect = Number(answer) === result;
+
   useEffect(() => {
     shouldRegenerateList && regenerateList();
   }, [factors]);
+
   useEffect(() => {
     shouldIncrementLevel && incrementLevel();
   }, [question]);
+
   useEffect(() => {
     shouldResetQuestion && resetQuestion();
+    shouldIncrementWorld && incrementWorld();
+    resetErrors();
   }, [level]);
+
   const regenerateList = () => {
     const newFactors = generateFactorsListForWorld(world);
     data.factors.set(newFactors);
     setFactors(newFactors);
   };
+
   const removeQuestion = () => {
     const newFactors = removePair(factors, idx);
     data.factors.set(newFactors);
     setFactors(newFactors);
     pickNewQuestion(newFactors);
   };
+
   const pickNewQuestion = (factors: Pair[]) => {
     const newIdx = getRandomIndex(factors);
     data.idx.set(newIdx);
     setIdx(newIdx);
   };
+
   const incrementQuestionNumber = () => {
     data.question.set(question + 1);
     setQuestion((question) => question + 1);
   };
+
   const incrementErrors = () => {
     data.errors.set(errors + 1);
     setErrors((errors) => errors + 1);
   };
+
   const incrementLevel = () => {
     data.level.set(level + 1);
     setLevel((level) => level + 1);
   };
+
+  const incrementWorld = () => {
+    data.world.set(world + 1);
+    setWorld((world) => world + 1);
+  };
+
   const resetErrors = () => {
     data.errors.set(0);
     setErrors(0);
   };
+
   const resetQuestion = () => {
     data.question.set(1);
     setQuestion(1);
   };
+
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setAnswer(value);
   };
+
+  const inputName = (e: ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setAnswer(value);
+  };
+
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     moveForward();
   };
+
+  const sendName = (e: FormEvent) => {
+    e.preventDefault();
+  };
+
   const moveForward = () => {
     if (isCorrect) {
       incrementQuestionNumber();
@@ -103,21 +135,33 @@ export const Multiplication = () => {
     }
     setAnswer("");
   };
-  return (
-    <div>
-      <div>
-        <span>Question {question}</span>
-        <span>Level {level}</span>
-        <span>World {world}</span>
-      </div>
-      <form onSubmit={onSubmit}>
-        <span>{pair ? `${a} x ${b} = ` : ""}</span>
-        <input type="number" value={answer} onChange={onChange} />
+
+  if (shouldShowWelcome) {
+    return (
+      <form onSubmit={sendName}>
+        <span>Wpisz swoje imię: </span>
+        <input type="text" onBlur={inputName} />
       </form>
-      <div>{JSON.stringify(factors)}</div>
+    );
+  } else if (shouldShowThankYou) {
+    return <div>Thank You</div>;
+  } else {
+    return (
       <div>
-        <button onClick={() => localStorage.clear()}>Reset</button>
+        <div>
+          <span>Question {question}</span>
+          <span>Level {level}</span>
+          <span>World {world}</span>
+        </div>
+        <form onSubmit={onSubmit}>
+          <span>{pair ? `${a} x ${b} = ` : ""}</span>
+          <input type="number" value={answer} onChange={onChange} />
+        </form>
+        <div>{JSON.stringify(factors)}</div>
+        <div>
+          <button onClick={() => localStorage.clear()}>Reset</button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 };

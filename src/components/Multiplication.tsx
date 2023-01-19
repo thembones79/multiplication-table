@@ -107,6 +107,11 @@ export const Multiplication = () => {
     setQuestion(1);
   };
 
+  const saveName = (name: string) => {
+    data.userName.set(name);
+    setUserName(name);
+  };
+
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setAnswer(value);
@@ -114,7 +119,7 @@ export const Multiplication = () => {
 
   const inputName = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    setAnswer(value);
+    saveName(value);
   };
 
   const onSubmit = (e: FormEvent) => {
@@ -138,7 +143,7 @@ export const Multiplication = () => {
 
   if (shouldShowWelcome) {
     return (
-      <form onSubmit={sendName}>
+      <form>
         <span>Wpisz swoje imię: </span>
         <input type="text" onBlur={inputName} />
       </form>
@@ -148,6 +153,7 @@ export const Multiplication = () => {
   } else {
     return (
       <div>
+        <h1>Hej, {userName}, a ile to jest...?</h1>
         <div>
           <span>Question {question}</span>
           <span>Level {level}</span>
@@ -161,6 +167,7 @@ export const Multiplication = () => {
         <div>
           <button onClick={() => localStorage.clear()}>Reset</button>
         </div>
+        <div>Errors: {errors}</div>
       </div>
     );
   }

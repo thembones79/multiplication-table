@@ -1,13 +1,13 @@
-function saveParse<T>(item: string | null): T {
+function saveParse<T>(item: string): T {
   try {
-    return item && JSON.parse(item);
+    return JSON.parse(item) as T;
   } catch (error) {
     return item as T;
   }
 }
 export function getStorage<T>(key: string): T {
-  const item = localStorage.getItem(key);
-  return item && saveParse<T>(item);
+  const item = localStorage.getItem(key) || "";
+  return saveParse<T>(item);
 }
 
 export function setStorage<T>(key: string, value: T) {

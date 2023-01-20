@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef, FormEvent, ChangeEvent } from "react";
-import { Input } from "./components/Input";
 import { data } from "./data";
-import "./App.css";
+import "./App.scss";
 
 type Pair = [number, number];
 const generateFactorsListForWorld = (world: number) => {
@@ -25,11 +24,13 @@ const removePair = (factors: Pair[], idx: number) => {
 };
 
 export const App = () => {
+  const MAX = 10;
   const [userName, setUserName] = useState(data.userName.get() || "");
   const [question, setQuestion] = useState(data.question.get() || 1);
   const [answer, setAnswer] = useState("");
   const [level, setLevel] = useState(data.level.get() || 1);
   const [world, setWorld] = useState(data.world.get() || 1);
+  const [score, setScore] = useState(data.score.get() || 0);
   const [errors, setErrors] = useState(data.errors.get() || 0);
   const [factors, setFactors] = useState<Pair[]>(
     data.factors.get() || generateFactorsListForWorld(level || 1)
@@ -38,11 +39,12 @@ export const App = () => {
   const pair = factors[idx];
   const [a, b] = pair;
   const result = pair ? a * b : 0;
+  const points = 10 ** world * level;
   const shouldRegenerateList = factors.length === 1;
-  const shouldIncrementLevel = question > 10 && errors === 0;
-  const shouldResetQuestion = question > 10;
-  const shouldIncrementWorld = level > 10;
-  const shouldShowThankYou = world > 10;
+  const shouldIncrementLevel = question > MAX && errors === 0;
+  const shouldResetQuestion = question > MAX;
+  const shouldIncrementWorld = level > MAX;
+  const shouldShowThankYou = world > MAX;
   const shouldShowWelcome = !userName;
   const isCorrect = Number(answer) === result;
   const userNameInput = useRef<HTMLInputElement>(null);
@@ -104,6 +106,16 @@ export const App = () => {
     setWorld((world) => world + 1);
   };
 
+  const incrementScore = () => {
+    data.score.set(score + points);
+    setScore((score) => score + points);
+  };
+
+  const decrementScore = () => {
+    data.score.set(score - points);
+    setScore((score) => score - points);
+  };
+
   const resetErrors = () => {
     data.errors.set(0);
     setErrors(0);
@@ -143,8 +155,10 @@ export const App = () => {
     if (isCorrect) {
       incrementQuestionNumber();
       removeQuestion();
+      incrementScore();
     } else {
       incrementErrors();
+      decrementScore();
     }
     setAnswer("");
   };
@@ -152,8 +166,13 @@ export const App = () => {
   if (shouldShowWelcome) {
     return (
       <form onSubmit={sendName}>
-        <span>Wpisz swoje imię: </span>
-        <input type="text" onBlur={inputName} ref={userNameInput} />
+        <h1>Wpisz swoje imię: </h1>
+        <input
+          className="big-txt"
+          type="text"
+          onBlur={inputName}
+          ref={userNameInput}
+        />
       </form>
     );
   } else if (shouldShowThankYou) {
@@ -161,21 +180,32 @@ export const App = () => {
   } else {
     return (
       <div>
-        <h1>Hej, {userName}, a ile to jest...?</h1>
-        <div>
-          <span>Question {question}</span>
-          <span>Level {level}</span>
-          <span>World {world}</span>
-        </div>
+        <h1>
+          Hej, <span className="floatingTitle">{userName}</span>, a ile to
+          jest...?
+        </h1>
         <form onSubmit={onSubmit}>
-          <span>{pair ? `${a} x ${b} = ` : ""}</span>
-          <input autoFocus type="number" value={answer} onChange={onChange} />
+          <span className="big-txt">{pair ? `${a} x ${b} = ` : ""}</span>
+          <input
+            autoFocus
+            className="big-txt"
+            type="number"
+            value={answer}
+            onChange={onChange}
+          />
+          <div className={question % 2 === 0 ? "hint" : "diff"}>Hint :)</div>
         </form>
-        <div>{JSON.stringify(factors)}</div>
+        <div style={{ animation: `fadeIn ${factors.length / 2}s` }}>
+          {JSON.stringify(factors)}
+        </div>
         <div>
           <button onClick={() => localStorage.clear()}>Reset</button>
         </div>
-        <div>Errors: {errors}</div>
+        <div>Błędy: {errors}</div>
+        <div>Punkty: {score}</div>
+        <div>
+          <span>{`Pytanie ${question} z ${MAX} | Poziom ${level} z ${MAX} | Świat ${world} z ${MAX}`}</span>
+        </div>
       </div>
     );
   }

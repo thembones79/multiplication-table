@@ -145,7 +145,7 @@ export const App = () => {
   if (shouldShowWelcome) {
     return (
       <form>
-        <span>Wpisz swoje imię: </span>
+        <span>Wpisz swoje imię2: </span>
         <input type="text" onBlur={inputName} />
       </form>
     );

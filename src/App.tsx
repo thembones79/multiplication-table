@@ -1,4 +1,5 @@
-import { useEffect, useState, FormEvent, ChangeEvent } from "react";
+import { useEffect, useState, useRef, FormEvent, ChangeEvent } from "react";
+import { Input } from "./components/Input";
 import { data } from "./data";
 import "./App.css";
 
@@ -44,6 +45,11 @@ export const App = () => {
   const shouldShowThankYou = world > 10;
   const shouldShowWelcome = !userName;
   const isCorrect = Number(answer) === result;
+  const userNameInput = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    userNameInput.current?.focus();
+  }, []);
 
   useEffect(() => {
     shouldRegenerateList && regenerateList();
@@ -130,6 +136,7 @@ export const App = () => {
 
   const sendName = (e: FormEvent) => {
     e.preventDefault();
+    userNameInput.current?.blur();
   };
 
   const moveForward = () => {
@@ -144,9 +151,9 @@ export const App = () => {
 
   if (shouldShowWelcome) {
     return (
-      <form>
-        <span>Wpisz swoje imię2: </span>
-        <input type="text" onBlur={inputName} />
+      <form onSubmit={sendName}>
+        <span>Wpisz swoje imię: </span>
+        <input type="text" onBlur={inputName} ref={userNameInput} />
       </form>
     );
   } else if (shouldShowThankYou) {
@@ -162,7 +169,7 @@ export const App = () => {
         </div>
         <form onSubmit={onSubmit}>
           <span>{pair ? `${a} x ${b} = ` : ""}</span>
-          <input type="number" value={answer} onChange={onChange} />
+          <input autoFocus type="number" value={answer} onChange={onChange} />
         </form>
         <div>{JSON.stringify(factors)}</div>
         <div>

@@ -206,7 +206,9 @@ export const App = () => {
           {/* <div className={question % 2 === 0 ? "hint" : "diff"}>Hint :)</div> */}
         </form>
         <BarPanel max={MAX} question={question} level={level} world={world} />
-        <h1>Punkty: {score}</h1>
+        <h1>
+          Punkty: <span className="blue">{score}</span>
+        </h1>
       </div>
     );
   }

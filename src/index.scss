@@ -33,9 +33,9 @@ body {
 }
 
 h1 {
-  font-size: 6vw;
+  font-size: clamp(26px, 6vw, 60px);
   line-height: 1.1;
-  margin-bottom: 3vw;
+  margin-bottom: clamp(12px, 3vw, 38px);
 }
 
 button {

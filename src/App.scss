@@ -1,3 +1,5 @@
+$blueish: #2a7af7;
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -46,11 +48,12 @@ input:focus {
   background: transparent;
   outline: none;
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 7vw;
-  width: 40vw;
-  color: #2a7af7;
-  text-shadow: 0 0 6px #2a7af7;
-  line-height: 7vw;
+  font-size: clamp(26px, 7vw, 70px);
+  line-height: clamp(26px, 7vw, 70px);
+  width: 50vw;
+  max-width: 500px;
+  color: $blueish;
+  text-shadow: 0 0 6px $blueish;
   font-weight: 900;
 }
 
@@ -171,7 +174,7 @@ input[type="number"] {
 
 .floatingTitle {
   @include floatingradient();
-  font-size: 6vw;
+  font-size: clamp(26px, 6vw, 60px);
   font-weight: 900;
   margin-bottom: 30px;
 }
@@ -194,7 +197,10 @@ input[type="number"] {
   font-size: 3vw;
 }
 
-
 .big-txt {
-  font-size: 7vw;
+  font-size: clamp(26px, 7vw, 70px);
+}
+
+.blue {
+  color: $blueish;
 }

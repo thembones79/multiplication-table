@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef, FormEvent, ChangeEvent } from "react";
+import { BarPanel } from "./components/BarPanel";
 import { data } from "./data";
 import "./App.scss";
 
@@ -36,6 +37,7 @@ export const App = () => {
     data.factors.get() || generateFactorsListForWorld(level || 1)
   );
   const [idx, setIdx] = useState(data.idx.get() || getRandomIndex(factors));
+  const [fade, setFade] = useState("fade1");
   const pair = factors[idx];
   const [a, b] = pair;
   const result = pair ? a * b : 0;
@@ -141,6 +143,8 @@ export const App = () => {
     saveName(value);
   };
 
+  const resetFade = () => setFade("fade1");
+
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     moveForward();
@@ -156,6 +160,7 @@ export const App = () => {
       incrementQuestionNumber();
       removeQuestion();
       incrementScore();
+      resetFade();
     } else {
       incrementErrors();
       decrementScore();
@@ -185,7 +190,12 @@ export const App = () => {
           jest...?
         </h1>
         <form onSubmit={onSubmit}>
-          <span className="big-txt">{pair ? `${a} x ${b} = ` : ""}</span>
+          <span
+            onAnimationEnd={() => setFade("")}
+            className={"big-txt " + fade}
+          >
+            {pair ? `${a} x ${b} = ` : ""}
+          </span>
           <input
             autoFocus
             className="big-txt"
@@ -193,19 +203,10 @@ export const App = () => {
             value={answer}
             onChange={onChange}
           />
-          <div className={question % 2 === 0 ? "hint" : "diff"}>Hint :)</div>
+          {/* <div className={question % 2 === 0 ? "hint" : "diff"}>Hint :)</div> */}
         </form>
-        <div style={{ animation: `fadeIn ${factors.length / 2}s` }}>
-          {JSON.stringify(factors)}
-        </div>
-        <div>
-          <button onClick={() => localStorage.clear()}>Reset</button>
-        </div>
-        <div>Błędy: {errors}</div>
-        <div>Punkty: {score}</div>
-        <div>
-          <span>{`Pytanie ${question} z ${MAX} | Poziom ${level} z ${MAX} | Świat ${world} z ${MAX}`}</span>
-        </div>
+        <BarPanel max={MAX} question={question} level={level} world={world} />
+        <h1>Punkty: {score}</h1>
       </div>
     );
   }

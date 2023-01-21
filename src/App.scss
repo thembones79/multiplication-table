@@ -49,6 +49,7 @@ input:focus {
   font-size: 7vw;
   width: 40vw;
   color: #2a7af7;
+  text-shadow: 0 0 6px #2a7af7;
   line-height: 7vw;
   font-weight: 900;
 }
@@ -87,10 +88,7 @@ input[type="number"] {
 .ddiv {
   width: 100px;
   height: 100px;
-  background-color: red;
-  position: absolute;
-  animation-name: example;
-  animation-duration: 4s;
+  position: relative;
 }
 
 @keyframes example {
@@ -128,6 +126,18 @@ input[type="number"] {
   100% {
     opacity: 1;
   }
+}
+
+.trans {
+  opacity: 0;
+}
+
+.fade1 {
+  animation: fadeIn 3s;
+}
+
+.fade2 {
+  animation: fadeIn forwards 3s;
 }
 
 .hint {

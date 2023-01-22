@@ -15,6 +15,16 @@ const generateFactorsListForWorld = (world: number) => {
   return factors as Pair[];
 };
 
+const generateStats = () => {
+  const keys = generateFactorsListForWorld(11);
+  const stats = {};
+  keys.forEach((key) => {
+    //@ts-ignore
+    stats[JSON.stringify(key)] = 0;
+  });
+  return stats;
+};
+
 const getRandomIndex = (factors: Pair[]) =>
   Math.floor(Math.random() * factors.length);
 
@@ -39,6 +49,7 @@ export const App = () => {
   const [idx, setIdx] = useState(data.idx.get() || getRandomIndex(factors));
   const [fade, setFade] = useState("fade1");
   const [hint, setHint] = useState("trans");
+  const [stats, setStats] = useState(data.stats.get() || generateStats());
   const pair = factors[idx];
   const [a, b] = pair;
   const result = pair ? a * b : 0;
@@ -62,6 +73,9 @@ export const App = () => {
     shouldRegenerateList && regenerateList();
   }, [factors]);
 
+  useEffect(() => {
+    data.stats.set(stats);
+  }, [stats]);
   useEffect(() => {
     shouldIncrementLevel && incrementLevel();
     shouldResetLevel && resetLevel();
@@ -167,6 +181,13 @@ export const App = () => {
     userNameInput.current?.blur();
   };
 
+  const addErrorToStats = () => {
+    const key = JSON.stringify(pair);
+    setStats((stats) => {
+      return { ...stats, [key]: stats[key as keyof typeof stats] + 1 };
+    });
+  };
+
   const moveForward = () => {
     if (isEmpty) return;
     if (isCorrect) {
@@ -179,6 +200,7 @@ export const App = () => {
       incrementErrors();
       addQuadrupledWrongAnswer();
       showHint();
+      addErrorToStats();
     }
     setAnswer("");
   };

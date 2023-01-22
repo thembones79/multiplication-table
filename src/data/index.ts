@@ -11,4 +11,5 @@ export const data = {
   allQuestionsCount: create<number>("ALL_QUESTIONS_COUNT"),
   errors: create<number>("ERRORS"),
   idx: create<number>("IDX"),
+  stats: create<object>("STATS"),
 };

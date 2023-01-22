@@ -38,7 +38,7 @@ export const App = () => {
   );
   const [idx, setIdx] = useState(data.idx.get() || getRandomIndex(factors));
   const [fade, setFade] = useState("fade1");
-  const [hint, setHint] = useState("");
+  const [hint, setHint] = useState("trans");
   const pair = factors[idx];
   const [a, b] = pair;
   const result = pair ? a * b : 0;
@@ -84,7 +84,7 @@ export const App = () => {
   };
 
   const addQuadrupledWrongAnswer = () => {
-    const newFactors = [pair, pair, ...factors, pair, pair];
+    const newFactors = [...factors, pair, pair];
     data.factors.set(newFactors);
     setFactors(newFactors);
   };
@@ -153,9 +153,9 @@ export const App = () => {
 
   const resetFade = () => setFade("fade1");
 
-  const showHint = () => setHint("fade1");
+  const showHint = () => setHint("");
 
-  const hideHint = () => setHint("");
+  const hideHint = () => setHint("trans");
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -218,7 +218,7 @@ export const App = () => {
             value={answer}
             onChange={onChange}
           />
-          <div onAnimationEnd={hideHint} className={"trans error " + hint}>
+          <div onAnimationEnd={hideHint} className={"error " + hint}>
             Prawidłowa odpowiedź to: <span className="fat">{result}</span>
           </div>
         </form>

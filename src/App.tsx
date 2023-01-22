@@ -47,6 +47,7 @@ export const App = () => {
   const shouldIncrementLevel = question > MAX;
   const shouldResetQuestion = question > MAX;
   const shouldIncrementWorld = level > MAX;
+  const shouldResetLevel = level > MAX;
   const shouldShowThankYou = world > MAX;
   const shouldShowWelcome = !userName;
   const isCorrect = Number(answer) === result;
@@ -63,13 +64,11 @@ export const App = () => {
 
   useEffect(() => {
     shouldIncrementLevel && incrementLevel();
+    shouldResetLevel && resetLevel();
     shouldResetQuestion && resetQuestion();
     shouldResetQuestion && resetErrors();
-  }, [question]);
-
-  useEffect(() => {
     shouldIncrementWorld && incrementWorld();
-  }, [level]);
+  }, [question]);
 
   const regenerateList = () => {
     const newFactors = generateFactorsListForWorld(world);
@@ -85,7 +84,7 @@ export const App = () => {
   };
 
   const addQuadrupledWrongAnswer = () => {
-    const newFactors = [...factors, pair, pair, pair, pair];
+    const newFactors = [pair, pair, ...factors, pair, pair];
     data.factors.set(newFactors);
     setFactors(newFactors);
   };
@@ -121,11 +120,6 @@ export const App = () => {
     setScore((score) => score + points);
   };
 
-  const addOne = () => {
-    data.score.set(score + 1);
-    setScore((score) => score + 1);
-  };
-
   const resetErrors = () => {
     data.errors.set(0);
     setErrors(0);
@@ -136,6 +130,11 @@ export const App = () => {
     setQuestion(1);
   };
 
+  const resetLevel = () => {
+    data.level.set(1);
+    setLevel(1);
+  };
+
   const saveName = (name: string) => {
     data.userName.set(name);
     setUserName(name);
@@ -144,6 +143,7 @@ export const App = () => {
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setAnswer(value);
+    hideHint();
   };
 
   const inputName = (e: ChangeEvent<HTMLInputElement>) => {
@@ -154,6 +154,8 @@ export const App = () => {
   const resetFade = () => setFade("fade1");
 
   const showHint = () => setHint("fade1");
+
+  const hideHint = () => setHint("");
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -172,6 +174,7 @@ export const App = () => {
       removeQuestion();
       incrementScore();
       resetFade();
+      hideHint();
     } else {
       incrementErrors();
       addQuadrupledWrongAnswer();
@@ -215,10 +218,7 @@ export const App = () => {
             value={answer}
             onChange={onChange}
           />
-          <div
-            onAnimationEnd={() => setHint("")}
-            className={"trans error " + hint}
-          >
+          <div onAnimationEnd={hideHint} className={"trans error " + hint}>
             Prawidłowa odpowiedź to: <span className="fat">{result}</span>
           </div>
         </form>

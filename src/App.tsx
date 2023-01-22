@@ -49,6 +49,7 @@ export const App = () => {
   const shouldShowThankYou = world > MAX;
   const shouldShowWelcome = !userName;
   const isCorrect = Number(answer) === result;
+  const isEmpty = answer === "";
   const userNameInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -113,9 +114,9 @@ export const App = () => {
     setScore((score) => score + points);
   };
 
-  const decrementScore = () => {
-    data.score.set(score - points);
-    setScore((score) => score - points);
+  const addOne = () => {
+    data.score.set(score + 1);
+    setScore((score) => score + 1);
   };
 
   const resetErrors = () => {
@@ -156,6 +157,7 @@ export const App = () => {
   };
 
   const moveForward = () => {
+    if (isEmpty) return;
     if (isCorrect) {
       incrementQuestionNumber();
       removeQuestion();
@@ -163,7 +165,7 @@ export const App = () => {
       resetFade();
     } else {
       incrementErrors();
-      decrementScore();
+      addOne();
     }
     setAnswer("");
   };
@@ -203,11 +205,21 @@ export const App = () => {
             value={answer}
             onChange={onChange}
           />
-          {/* <div className={question % 2 === 0 ? "hint" : "diff"}>Hint :)</div> */}
+          {/* {!isCorrect && ( */}
+          {/*   <div className="error"> */}
+          {/*     Prawidłowa odpowiedź to: <span className="fat">{result}</span> */}
+          {/*   </div> */}
+          {/* )} */}
         </form>
         <BarPanel max={MAX} question={question} level={level} world={world} />
         <h1>
           Punkty: <span className="blue">{score}</span>
+          {errors > 0 && (
+            <span>
+              <span>{`   Błędy: `}</span>
+              <span className="error">{errors}</span>
+            </span>
+          )}
         </h1>
       </div>
     );

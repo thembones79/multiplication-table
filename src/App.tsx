@@ -38,6 +38,7 @@ export const App = () => {
   );
   const [idx, setIdx] = useState(data.idx.get() || getRandomIndex(factors));
   const [fade, setFade] = useState("fade1");
+  const [hint, setHint] = useState("");
   const pair = factors[idx];
   const [a, b] = pair;
   const result = pair ? a * b : 0;
@@ -146,6 +147,8 @@ export const App = () => {
 
   const resetFade = () => setFade("fade1");
 
+  const showHint = () => setHint("fade1");
+
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     moveForward();
@@ -165,7 +168,7 @@ export const App = () => {
       resetFade();
     } else {
       incrementErrors();
-      addOne();
+      showHint();
     }
     setAnswer("");
   };
@@ -205,11 +208,12 @@ export const App = () => {
             value={answer}
             onChange={onChange}
           />
-          {/* {!isCorrect && ( */}
-          {/*   <div className="error"> */}
-          {/*     Prawidłowa odpowiedź to: <span className="fat">{result}</span> */}
-          {/*   </div> */}
-          {/* )} */}
+          <div
+            onAnimationEnd={() => setHint("")}
+            className={"trans error " + hint}
+          >
+            Prawidłowa odpowiedź to: <span className="fat">{result}</span>
+          </div>
         </form>
         <BarPanel max={MAX} question={question} level={level} world={world} />
         <h1>

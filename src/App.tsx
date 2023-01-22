@@ -44,7 +44,7 @@ export const App = () => {
   const result = pair ? a * b : 0;
   const points = 10 ** world * level;
   const shouldRegenerateList = factors.length === 1;
-  const shouldIncrementLevel = question > MAX && errors === 0;
+  const shouldIncrementLevel = question > MAX;
   const shouldResetQuestion = question > MAX;
   const shouldIncrementWorld = level > MAX;
   const shouldShowThankYou = world > MAX;
@@ -82,6 +82,12 @@ export const App = () => {
     data.factors.set(newFactors);
     setFactors(newFactors);
     pickNewQuestion(newFactors);
+  };
+
+  const addQuadrupledWrongAnswer = () => {
+    const newFactors = [...factors, pair, pair, pair, pair];
+    data.factors.set(newFactors);
+    setFactors(newFactors);
   };
 
   const pickNewQuestion = (factors: Pair[]) => {
@@ -168,6 +174,7 @@ export const App = () => {
       resetFade();
     } else {
       incrementErrors();
+      addQuadrupledWrongAnswer();
       showHint();
     }
     setAnswer("");

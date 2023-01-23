@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef, FormEvent, ChangeEvent } from "react";
+import { Stats } from "./components/Stats";
 import { BarPanel } from "./components/BarPanel";
 import { data } from "./data";
 import "./App.scss";
@@ -51,7 +52,9 @@ export const App = () => {
   const [hint, setHint] = useState("trans");
   const [scale, setScale] = useState("scale");
   const [poo, setPoo] = useState("");
+  const showEffects = !scale || poo ? "flex" : "none";
   const [stats, setStats] = useState(data.stats.get() || generateStats());
+  const [showStats, setShowStats] = useState(false);
   const pair = factors[idx];
   const [a, b] = pair;
   const result = pair ? a * b : 0;
@@ -220,7 +223,15 @@ export const App = () => {
     setAnswer("");
   };
 
-  if (shouldShowWelcome) {
+  if (showStats) {
+    return (
+      <Stats
+        onClose={() => {
+          setShowStats(false);
+        }}
+      />
+    );
+  } else if (shouldShowWelcome) {
     return (
       <form onSubmit={sendName}>
         <h1>Wpisz swoje imię: </h1>
@@ -238,8 +249,11 @@ export const App = () => {
     return (
       <div>
         <h1>
-          Hej, <span className="floatingTitle">{userName}</span>, a ile to
-          jest...?
+          Hej,{" "}
+          <span onClick={() => setShowStats(true)} className="floatingTitle">
+            {userName}
+          </span>
+          , a ile to jest...?
         </h1>
         <form onSubmit={onSubmit}>
           <span onAnimationEnd={shrink} className={"big-txt " + fade}>
@@ -266,7 +280,7 @@ export const App = () => {
             </span>
           )}
         </h1>
-        <div className="points__wrapper">
+        <div style={{ display: showEffects }} className="points__wrapper">
           <div className={`points ${fade} ${scale}`}>+{points}</div>
           <div onAnimationEnd={hidePoo} className={`poo ${poo}`}>
             💩

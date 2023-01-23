@@ -122,6 +122,29 @@ input[type="number"] {
   }
 }
 
+@keyframes boom {
+  0% {
+    opacity: 0;
+    scale: 0;
+    transform: translateY(-900px);
+  }
+  25% {
+    opacity: 1;
+    scale: 1;
+    transform: translateY(200px);
+  }
+  75% {
+    opacity: 1;
+    scale: 1;
+    transform: translateY(200px);
+  }
+  100% {
+    opacity: 1;
+    scale: 3;
+    transform: translateY(700px);
+  }
+}
+
 @keyframes fadeIn {
   0% {
     opacity: 0;
@@ -138,6 +161,10 @@ input[type="number"] {
 
 .fade1 {
   animation: fadeIn 3s;
+}
+
+.boom {
+  animation: boom 4s;
 }
 
 .fade2 {
@@ -205,3 +232,40 @@ input[type="number"] {
 .blue {
   color: $blueish;
 }
+
+.scale {
+  scale: 0;
+  opacity: 0;
+  position:fixed;
+  rotate:25deg;
+}
+
+.points {
+  font-size: 12vw;
+  margin:0;
+  padding:0;
+  font-weight: 900;
+  text-align: center;
+  text-shadow: 3px 3px 12px rgba(0, 0, 0, 0.35);
+  opacity: 0.2;
+  transition: 0.7s ease-out;
+  position: fixed;
+  &__wrapper {
+    position: fixed;
+    margin:0;
+    padding:0;
+    display: flex;
+    width: 90vw;
+    height: 90vh;
+    justify-content: center;
+    align-items: center;
+    left: 1vw;
+    top: 1vw;
+  }
+}
+
+.poo{
+  font-size: 30vw;
+  opacity: 0;
+}
+

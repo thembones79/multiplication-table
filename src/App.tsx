@@ -49,6 +49,8 @@ export const App = () => {
   const [idx, setIdx] = useState(data.idx.get() || getRandomIndex(factors));
   const [fade, setFade] = useState("fade1");
   const [hint, setHint] = useState("trans");
+  const [scale, setScale] = useState("scale");
+  const [poo, setPoo] = useState("");
   const [stats, setStats] = useState(data.stats.get() || generateStats());
   const pair = factors[idx];
   const [a, b] = pair;
@@ -171,6 +173,17 @@ export const App = () => {
 
   const hideHint = () => setHint("trans");
 
+  const hidePoo = () => setPoo("");
+
+  const showPoo = () => setPoo("boom");
+
+  const enlarge = () => setScale("");
+
+  const shrink = () => {
+    setFade("");
+    setScale("scale");
+  };
+
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     moveForward();
@@ -196,10 +209,12 @@ export const App = () => {
       incrementScore();
       resetFade();
       hideHint();
+      enlarge();
     } else {
       incrementErrors();
       addQuadrupledWrongAnswer();
       showHint();
+      showPoo();
       addErrorToStats();
     }
     setAnswer("");
@@ -227,10 +242,7 @@ export const App = () => {
           jest...?
         </h1>
         <form onSubmit={onSubmit}>
-          <span
-            onAnimationEnd={() => setFade("")}
-            className={"big-txt " + fade}
-          >
+          <span onAnimationEnd={shrink} className={"big-txt " + fade}>
             {pair ? `${a} x ${b} = ` : ""}
           </span>
           <input
@@ -254,6 +266,12 @@ export const App = () => {
             </span>
           )}
         </h1>
+        <div className="points__wrapper">
+          <div className={`points ${fade} ${scale}`}>+{points}</div>
+          <div onAnimationEnd={hidePoo} className={`poo ${poo}`}>
+            💩
+          </div>
+        </div>
       </div>
     );
   }

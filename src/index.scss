@@ -69,3 +69,18 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+table {
+  width: 80vw;
+  margin-bottom: 6vh;
+  border: node;
+}
+
+tr {
+  height: 2.2em;
+}
+
+thead,
+tbody tr:nth-child(even) {
+  background-color: rgba(169, 169, 169, 0.22);
+}

@@ -5,7 +5,7 @@ export const Stats = ({ onClose }: { onClose: () => void }) => {
   const renderedBody = table
     .filter((row) => row[1] > 0)
     //@ts-ignore
-    .sort((a, b) => a[1] < b[1])
+    .sort((a, b) => b[1] - a[1])
     .map((row) => (
       <tr key={row[0]}>
         <td>{row[0]}</td>
@@ -15,7 +15,7 @@ export const Stats = ({ onClose }: { onClose: () => void }) => {
 
   return (
     <div>
-      <table>
+      <table cellSpacing="0" cellPadding="0">
         <thead>
           <tr>
             <th>Liczby</th>

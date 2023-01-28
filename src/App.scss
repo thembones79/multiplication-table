@@ -236,14 +236,14 @@ input[type="number"] {
 .scale {
   scale: 0;
   opacity: 0;
-  position:fixed;
-  rotate:25deg;
+  position: fixed;
+  rotate: 25deg;
 }
 
 .points {
   font-size: 12vw;
-  margin:0;
-  padding:0;
+  margin: 0;
+  padding: 0;
   font-weight: 900;
   text-align: center;
   text-shadow: 3px 3px 12px rgba(0, 0, 0, 0.35);
@@ -252,8 +252,8 @@ input[type="number"] {
   position: fixed;
   &__wrapper {
     position: fixed;
-    margin:0;
-    padding:0;
+    margin: 0;
+    padding: 0;
     display: flex;
     width: 90vw;
     height: 90vh;
@@ -264,8 +264,70 @@ input[type="number"] {
   }
 }
 
-.poo{
+.poo {
   font-size: 30vw;
   opacity: 0;
+}
+
+.dragon__canvas {
+  position: relative;
+  width: 700px;
+  display: flex;
+  animation: dragon-canvas 1.8s infinite ease-in-out;
+  height: 300px;
+}
+
+.dragon__left-arm {
+  position: absolute;
+  top: 40px;
+  animation: left-wing 0.8s infinite ease-in;
+  transform-origin: right;
+}
+.dragon__right-arm {
+  position: absolute;
+  left: 350px;
+  top: 30px;
+  animation: right-wing 0.7s infinite ease-in;
+  transform-origin: left;
+}
+.dragon {
+  position: absolute;
+  left: 170px;
+}
+
+@keyframes left-wing {
+  50% {
+    transform: rotate(40deg);
+  }
+}
+
+@keyframes right-wing {
+  50% {
+    transform: rotate(-38deg);
+  }
+}
+
+@keyframes dragon-canvas {
+  50% {
+    transform: translateY(100px);
+  }
+}
+
+.hearts {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom:150px;
+}
+
+.heart {
+  width: 64px;
+}
+
+
+
+@keyframes beat {
+  50% {
+    transform: scale(0.5);
+  }
 }
 

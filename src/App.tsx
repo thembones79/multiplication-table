@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, FormEvent, ChangeEvent } from "react";
 import { Stats } from "./components/Stats";
+import { BossBattlePage } from "./pages/BossBattlePage";
 import { BarPanel } from "./components/BarPanel";
 import { data } from "./data";
 import "./App.scss";
@@ -64,7 +65,7 @@ export const App = () => {
   const shouldResetQuestion = question > MAX;
   const shouldIncrementWorld = level > MAX;
   const shouldResetLevel = level > MAX;
-  const shouldShowThankYou = world > MAX;
+  const shouldShowBossBattle = world > MAX;
   const shouldShowWelcome = !userName;
   const isCorrect = Number(answer) === result;
   const isEmpty = answer === "";
@@ -243,8 +244,12 @@ export const App = () => {
         />
       </form>
     );
-  } else if (shouldShowThankYou) {
-    return <div>Thank You</div>;
+  } else if (shouldShowBossBattle) {
+    return (
+      <div>
+        <BossBattlePage />
+      </div>
+    );
   } else {
     return (
       <div>

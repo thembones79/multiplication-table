@@ -3,38 +3,14 @@ import { Stats } from "./components/Stats";
 import { BossBattlePage } from "./pages/BossBattlePage";
 import { BarPanel } from "./components/BarPanel";
 import { data } from "./data";
+import {
+  Pair,
+  generateFactorsListForWorld,
+  generateStats,
+  getRandomIndex,
+  removePair,
+} from "./utils/helpers";
 import "./App.scss";
-
-type Pair = [number, number];
-const generateFactorsListForWorld = (world: number) => {
-  let factors = [];
-  for (let i = 2; i < 11; i++) {
-    for (let j = 2; j < 11; j++) {
-      if (i * j > world * 10) break;
-      factors.push([i, j]);
-    }
-  }
-  return factors as Pair[];
-};
-
-const generateStats = () => {
-  const keys = generateFactorsListForWorld(11);
-  const stats = {};
-  keys.forEach((key) => {
-    //@ts-ignore
-    stats[JSON.stringify(key)] = 0;
-  });
-  return stats;
-};
-
-const getRandomIndex = (factors: Pair[]) =>
-  Math.floor(Math.random() * factors.length);
-
-const removePair = (factors: Pair[], idx: number) => {
-  const newFactors = [...factors];
-  newFactors.splice(idx, 1);
-  return newFactors;
-};
 
 export const App = () => {
   const MAX = 10;
@@ -46,9 +22,9 @@ export const App = () => {
   const [score, setScore] = useState(data.score.get() || 0);
   const [errors, setErrors] = useState(data.errors.get() || 0);
   const [factors, setFactors] = useState<Pair[]>(
-    data.factors.get() || generateFactorsListForWorld(level || 1)
+    data.factors.get() || generateFactorsListForWorld(world || 1)
   );
-  const [idx, setIdx] = useState(data.idx.get() || getRandomIndex(factors));
+  const [idx, setIdx] = useState(0);
   const [fade, setFade] = useState("fade1");
   const [hint, setHint] = useState("trans");
   const [scale, setScale] = useState("scale");
@@ -82,6 +58,7 @@ export const App = () => {
   useEffect(() => {
     data.stats.set(stats);
   }, [stats]);
+
   useEffect(() => {
     shouldIncrementLevel && incrementLevel();
     shouldResetLevel && resetLevel();
@@ -89,6 +66,10 @@ export const App = () => {
     shouldResetQuestion && resetErrors();
     shouldIncrementWorld && incrementWorld();
   }, [question]);
+
+  useEffect(() => {
+    shouldShowBossBattle && generateBossQuestions();
+  }, [shouldShowBossBattle]);
 
   const regenerateList = () => {
     const newFactors = generateFactorsListForWorld(world);
@@ -98,6 +79,19 @@ export const App = () => {
 
   const removeQuestion = () => {
     const newFactors = removePair(factors, idx);
+    data.factors.set(newFactors);
+    setFactors(newFactors);
+    pickNewQuestion(newFactors);
+  };
+
+  const generateBossQuestions = () => {
+    const table = Object.entries(stats);
+    const mostDifficult: Pair[] = table
+      .filter((row) => row[1] > 0)
+      //@ts-ignore
+      .sort((a, b) => b[1] - a[1])
+      .map((x) => JSON.parse(x[0]));
+    const newFactors = mostDifficult || generateFactorsListForWorld(10);
     data.factors.set(newFactors);
     setFactors(newFactors);
     pickNewQuestion(newFactors);
@@ -247,7 +241,23 @@ export const App = () => {
   } else if (shouldShowBossBattle) {
     return (
       <div>
-        <BossBattlePage />
+        <BossBattlePage
+          factors={factors}
+          onSubmit={onSubmit}
+          shrink={shrink}
+          fade={fade}
+          pair={pair}
+          a={a}
+          b={b}
+          answer={answer}
+          onChange={onChange}
+          score={score}
+          showEffects={showEffects}
+          scale={scale}
+          points={points}
+          hidePoo={hidePoo}
+          poo={poo}
+        />
       </div>
     );
   } else {

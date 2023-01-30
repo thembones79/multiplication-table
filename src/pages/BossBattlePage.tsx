@@ -1,5 +1,5 @@
 import { FormEvent, ChangeEvent } from "react";
-import { Pair } from "../utils/helpers";
+import { Pair, numberFormatter } from "../utils/helpers";
 import leftArm from "../assets/left.png";
 import rightArm from "../assets/right.png";
 import dragon from "../assets/dragon.png";
@@ -19,6 +19,7 @@ interface BossBattlePageProps {
   showEffects: string;
   scale: string;
   points: number;
+  rebirths: number;
   hidePoo: () => void;
   poo: string;
 }
@@ -35,6 +36,7 @@ export const BossBattlePage = ({
   onChange,
   score,
   showEffects,
+  rebirths,
   scale,
   points,
   hidePoo,
@@ -50,27 +52,35 @@ export const BossBattlePage = ({
         <img src={leftArm} className="dragon__left-arm" alt="left arm" />
         <img src={rightArm} className="dragon__right-arm" alt="right arm" />
         <img src={dragon} className="dragon" alt="dragon" />
-        <div>
-          <form onSubmit={onSubmit}>
-            <span onAnimationEnd={shrink} className={"big-txt " + fade}>
-              {pair ? `${a} x ${b} = ` : ""}
-            </span>
-            <input
-              autoFocus
-              className="big-txt"
-              type="number"
-              value={answer}
-              onChange={onChange}
-            />
-          </form>
-          <h1>
-            Punkty: <span className="blue">{score}</span>
-          </h1>
-          <div style={{ display: showEffects }} className="points__wrapper">
-            <div className={`points ${fade} ${scale}`}>+{points}</div>
-            <div onAnimationEnd={hidePoo} className={`poo ${poo}`}>
-              💩
-            </div>
+      </div>
+      <div>
+        <form onSubmit={onSubmit}>
+          <span onAnimationEnd={shrink} className={"big-txt " + fade}>
+            {pair ? `${a} x ${b} = ` : ""}
+          </span>
+          <input
+            autoFocus
+            className="big-txt"
+            type="number"
+            value={answer}
+            onChange={onChange}
+          />
+        </form>
+        <h1>
+          Punkty: <span className="blue">{numberFormatter(score)}</span>
+        </h1>
+        {!!rebirths && (
+          <h2>
+            Odrodzenia: <span className="blue">{rebirths}</span> (wszystko{" "}
+            <span className="blue">x{2 ** rebirths}</span>)
+          </h2>
+        )}
+        <div style={{ display: showEffects }} className="points__wrapper">
+          <div className={`points ${fade} ${scale}`}>
+            +{numberFormatter(points)}
+          </div>
+          <div onAnimationEnd={hidePoo} className={`poo ${poo}`}>
+            💩
           </div>
         </div>
       </div>

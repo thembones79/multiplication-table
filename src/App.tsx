@@ -9,6 +9,7 @@ import {
   generateStats,
   getRandomIndex,
   removePair,
+  numberFormatter,
 } from "./utils/helpers";
 import "./App.scss";
 
@@ -20,6 +21,7 @@ export const App = () => {
   const [level, setLevel] = useState(data.level.get() || 1);
   const [world, setWorld] = useState(data.world.get() || 1);
   const [score, setScore] = useState(data.score.get() || 0);
+  const [rebirths, setRebirths] = useState(data.rebirths.get() || 0);
   const [errors, setErrors] = useState(data.errors.get() || 0);
   const [factors, setFactors] = useState<Pair[]>(
     data.factors.get() || generateFactorsListForWorld(world || 1)
@@ -35,13 +37,15 @@ export const App = () => {
   const pair = factors[idx];
   const [a, b] = pair;
   const result = pair ? a * b : 0;
-  const points = 10 ** world * level;
+  const points = 10 ** world * level * 2 ** rebirths;
   const shouldRegenerateList = factors.length === 1;
+  const shouldRebirth = factors.length === 1;
   const shouldIncrementLevel = question > MAX;
   const shouldResetQuestion = question > MAX;
   const shouldIncrementWorld = level > MAX;
   const shouldResetLevel = level > MAX;
   const shouldShowBossBattle = world > MAX;
+  const shouldResetBossBattle = shouldShowBossBattle && errors > 0;
   const shouldShowWelcome = !userName;
   const isCorrect = Number(answer) === result;
   const isEmpty = answer === "";
@@ -52,7 +56,7 @@ export const App = () => {
   }, []);
 
   useEffect(() => {
-    shouldRegenerateList && regenerateList();
+    !shouldShowBossBattle && shouldRegenerateList && regenerateList();
   }, [factors]);
 
   useEffect(() => {
@@ -70,6 +74,10 @@ export const App = () => {
   useEffect(() => {
     shouldShowBossBattle && generateBossQuestions();
   }, [shouldShowBossBattle]);
+
+  useEffect(() => {
+    shouldResetBossBattle && resetBossBattle();
+  }, [shouldResetBossBattle]);
 
   const regenerateList = () => {
     const newFactors = generateFactorsListForWorld(world);
@@ -95,6 +103,12 @@ export const App = () => {
     data.factors.set(newFactors);
     setFactors(newFactors);
     pickNewQuestion(newFactors);
+  };
+
+  const resetBossBattle = () => {
+    generateBossQuestions();
+    resetErrors();
+    resetQuestion();
   };
 
   const addQuadrupledWrongAnswer = () => {
@@ -132,6 +146,11 @@ export const App = () => {
   const incrementScore = () => {
     data.score.set(score + points);
     setScore((score) => score + points);
+  };
+
+  const incrementRebirths = () => {
+    data.rebirths.set(rebirths + 1);
+    setRebirths((rebirths) => rebirths + 1);
   };
 
   const resetErrors = () => {
@@ -199,6 +218,18 @@ export const App = () => {
     });
   };
 
+  const rebirth = () => {
+    resetQuestion();
+    resetLevel();
+    resetErrors();
+    const newFactors = generateFactorsListForWorld(10);
+    data.factors.set(newFactors);
+    setFactors(newFactors);
+    data.world.set(10);
+    setWorld(10);
+    incrementRebirths();
+  };
+
   const moveForward = () => {
     if (isEmpty) return;
     if (isCorrect) {
@@ -208,6 +239,7 @@ export const App = () => {
       resetFade();
       hideHint();
       enlarge();
+      shouldRebirth && rebirth();
     } else {
       incrementErrors();
       addQuadrupledWrongAnswer();
@@ -254,6 +286,7 @@ export const App = () => {
           score={score}
           showEffects={showEffects}
           scale={scale}
+          rebirths={rebirths}
           points={points}
           hidePoo={hidePoo}
           poo={poo}
@@ -287,7 +320,7 @@ export const App = () => {
         </form>
         <BarPanel max={MAX} question={question} level={level} world={world} />
         <h1>
-          Punkty: <span className="blue">{score}</span>
+          Punkty: <span className="blue">{numberFormatter(score)}</span>
           {errors > 0 && (
             <span>
               <span>{`   Błędy: `}</span>
@@ -295,8 +328,16 @@ export const App = () => {
             </span>
           )}
         </h1>
+        {!!rebirths && (
+          <h2>
+            Odrodzenia: <span className="blue">{rebirths}</span> (wszystko{" "}
+            <span className="blue">x{2 ** rebirths}</span>)
+          </h2>
+        )}
         <div style={{ display: showEffects }} className="points__wrapper">
-          <div className={`points ${fade} ${scale}`}>+{points}</div>
+          <div className={`points ${fade} ${scale}`}>
+            +{numberFormatter(points)}
+          </div>
           <div onAnimationEnd={hidePoo} className={`poo ${poo}`}>
             💩
           </div>

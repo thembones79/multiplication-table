@@ -12,4 +12,5 @@ export const data = {
   errors: create<number>("ERRORS"),
   idx: create<number>("IDX"),
   stats: create<object>("STATS"),
+  rebirths: create<number>("REBIRTHS"),
 };

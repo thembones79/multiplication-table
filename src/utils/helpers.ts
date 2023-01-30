@@ -29,3 +29,8 @@ export const removePair = (factors: Pair[], idx: number) => {
   newFactors.splice(idx, 1);
   return newFactors;
 };
+
+export const numberFormatter = (number: number) => {
+  const formatter = new Intl.NumberFormat("en", { notation: "compact" });
+  return formatter.format(number);
+};

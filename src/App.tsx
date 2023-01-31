@@ -98,7 +98,8 @@ export const App = () => {
       .filter((row) => row[1] > 0)
       //@ts-ignore
       .sort((a, b) => b[1] - a[1])
-      .map((x) => JSON.parse(x[0]));
+      .map((x) => JSON.parse(x[0]))
+      .slice(0, 10);
     const newFactors = mostDifficult || generateFactorsListForWorld(10);
     data.factors.set(newFactors);
     setFactors(newFactors);
